@@ -153,6 +153,7 @@ h1 .dash { color: var(--gold); }
   color-scheme: light;
 }
 .field input:focus { border-color: var(--green); outline: none; }
+.field input.code { font-variant-numeric: tabular-nums; letter-spacing: .2em; font-weight: 700; }
 .hint { font-size: 13px; color: var(--muted); }
 .error { background: #fde8ea; color: var(--red-dk); border-radius: 12px; padding: 10px 14px; font-weight: 600; font-size: 15px; }
 .actions { display: grid; gap: 6px; }
@@ -213,10 +214,10 @@ h1 .dash { color: var(--gold); }
   <!-- 1. Welcome -->
   <section class="card" id="screen-welcome">
     <h2>Welcome to the draw</h2>
-    <p>Everyone has already been paired up and sealed in their own envelope. Only you can open yours.</p>
+    <p>Everyone has already been paired up and sealed in their own envelope. Only you can open yours, using your mobile number and the elf code the organiser texted you.</p>
     <ol class="steps">
       <li>Pick your name</li>
-      <li>Confirm your email</li>
+      <li>Enter your mobile and elf code</li>
       <li>Unwrap who you're buying for</li>
     </ol>
     <div>
@@ -235,9 +236,13 @@ h1 .dash { color: var(--gold); }
           <legend class="label">Your name</legend>
         </fieldset>
         <div class="field">
-          <label class="label" for="email">Your email</label>
-          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
-          <span class="hint">Use the email the organiser has for you. It's the key to your envelope, so nobody else can open it.</span>
+          <label class="label" for="mobile">Your mobile</label>
+          <input id="mobile" name="mobile" type="tel" autocomplete="tel" inputmode="tel" placeholder="07700 900123" required>
+        </div>
+        <div class="field">
+          <label class="label" for="code">Your elf code</label>
+          <input id="code" name="code" type="text" autocomplete="off" inputmode="numeric" placeholder="123 456" maxlength="9" required class="code">
+          <span class="hint">The 6-digit code the organiser texted you. Together with your mobile it's the key to your envelope, so nobody else can open it.</span>
         </div>
         <div class="error" id="loginError" role="alert" hidden></div>
         <div class="actions">
@@ -283,7 +288,7 @@ h1 .dash { color: var(--gold); }
   <!-- Test-only tools -->
   <section class="plate testpanel" id="testpanel" hidden>
     <h3>Test logins</h3>
-    <p style="margin:0">Fake emails for trying the flow. Tap Use to fill the login.</p>
+    <p style="margin:0">Pretend mobiles (Ofcom's TV-drama range, never real phones) and practice elf codes. Tap Use to fill the login.</p>
     <table><tbody id="testLogins"></tbody></table>
     <h3>Draw checks</h3>
     <p style="margin:0">Opens every envelope with the test logins and checks the rules. This shows the whole practice draw.</p>
@@ -296,7 +301,7 @@ h1 .dash { color: var(--gold); }
 </main>
 
 <script>
-const DATA = {"mode":"test","iter":150000,"people":["Sue","Simon","Laura","George","Katie","Biff","Dorothy"],"budget":"£50","envelopes":{"Sue":{"s":"5/OjFH7MrJM1iuH0PfyLnw==","i":"+szeZ2cpcjSm/QBn","c":"4m3Rsgo7O1h/ehiJLW1m0Fs1ugJ862QHAim+OX+UkKft6SddCzWbvHlDc0myrnyIQffpLa582rJ+I6kE45Jgrg=="},"Simon":{"s":"9mHHh7bChZR1/k0LBq7tPw==","i":"XMJ7LYt7bMeEWhMC","c":"ruhYIk8HRFuiAmT4kkc7j2Wn9zESp1LARrd2A/uA9Gxz9j+CKGfLXj5qZVSdRetiNcn6PG4N86ni3qkGKnMH5w=="},"Laura":{"s":"r+Dhdezq4EBTSkrWnuQmyg==","i":"fnsfcX+vMM9/gxrj","c":"G5AZ/EJtp021F3aJ/Tkz1PPwUZP21s6c2x0aC7t+pui8rJZcJnxB72fVQ0wsnIDB4j7CYWooHLtkBTJd1T2EMQ=="},"George":{"s":"WRTZ/Op/P0CTnnGXq/f0aw==","i":"qbdEzztZlmUhROPI","c":"qmDm1htIt/Ld+eUQfwmltRvMACf5KgztcWjMe0HxidcBn7E6ZQVCOrXCY7vTiFQoFLFTAbTr6ig8jLQrPDfXPg=="},"Katie":{"s":"X4/9ht8SKtlnRwDcjB1Cyg==","i":"PEjbRA7KA73iC+63","c":"PPm1H6Eybd87ONvc5Yh/em0uPeIX0ovwmtOFHmcgE/PlVNtCL4Og+R3ZtWaTe+3W6SWZ0Yq3f+nj8xrD+667Aw=="},"Biff":{"s":"ITRbNvdvT/Wevd4Z/OQ+uQ==","i":"tAtqpC43SGo3U9O3","c":"VneTLQsosRx6wFouU45lmMegY0zMcQgghdj15cras2vXfaoVF44+pV08e8MrXgChuJR4iT4YTITN8ibYGSnPFQ=="},"Dorothy":{"s":"BRUfN92rCzWW7xSEqvOlKA==","i":"oxhKj9LZ1qBbmM5v","c":"8ozAwAloo3n6q1NugCCFiQeZkqlD36JYS+eF2wDB2VYGqvXzadOExeDEKG8ibumPT+j1zONrQjLm926oXi9O2Q=="}},"testLogins":{"Sue":"sue@blagmas.test","Simon":"simon@blagmas.test","Laura":"laura@blagmas.test","George":"george@blagmas.test","Katie":"katie@blagmas.test","Biff":"biff@blagmas.test","Dorothy":"dorothy@blagmas.test"},"excludes":[["George","Laura"],["Biff","Katie"],["Sue","Simon"]],"builtAt":"2026-11-23"};
+const DATA = {"mode":"test","iter":150000,"people":["Sue","Simon","Laura","George","Katie","Biff","Dorothy"],"budget":"£50","envelopes":{"Sue":{"s":"Muhr5ZHqq6AtLpihmX5srg==","i":"Nw3PaqrlZB6K1Gqd","c":"3qCAUCnxkze5OwM8zudOT8amSOSUQtuFCM/VylwKMjn910Vi+ER2F22E5qeTxL/VJEZPelQZKDiWTNUNvkw+BQ=="},"Simon":{"s":"bj1yCKeH8woGUp6fYu5wbA==","i":"0Rvcl4ctvW4vsZxw","c":"hmTnTigaRpa+uaCrTC0rFW9JYV4zBaDV7eLHx6zmp9/oiQD8iR/Nxc7/xoCShzfnZ9VXRhzeT2tn9nkBseUknw=="},"Laura":{"s":"Z3s5St5zEOfFyKvQjMzN4A==","i":"Z7ImCuMzdTV5bKc7","c":"85fIyJuRwS2yyLoSw3BELGbsj9A/Vs0bwXQOKyFRlj/SfSKitZCH3NQeF0J5xblGtB06UFiTozn6YWXpfKXtvw=="},"George":{"s":"iG8C/6WAXcLtvN0t3FJaeg==","i":"H1+bcEV+HTlHcQUR","c":"xyEarZouUfgfZaPxkR5SWViI+XZp67ukWNloa20ZATZoOVGrHuMSn1DoyY961F6YhSCdN6n8/HBzbV/MXB8kHQ=="},"Katie":{"s":"EimfP/EBByfXDLK/1iveUw==","i":"bNF+9u/agEnMbivH","c":"IpfX4jRLHHCECmFVZCZtPcNE94hvJ4pbvwOUAK9PYeSAyFNPdnoyEV2g56gbX0Lh27zCPJBIMfofcCfF6rO/yA=="},"Biff":{"s":"jEGweQKmAH58Sa2Rz8RJlw==","i":"754bUxNiwJOMlMlD","c":"Bwvo983pGch2V0mQEzNnvFh9qF921JhSj5o0OsxUeXUM1/Lah3iWEEO2eEUg2eBUrb6FEkTaDVBHQojcpkI4jA=="},"Dorothy":{"s":"haQyatsdk8zdUPUKjZqU9w==","i":"q+/YtoKL2h1CReWt","c":"anLGU7Qv9oyx/9HrJr+gBjWHz97DYprtiJTlmLFIv1JI912l/cFRBi8svuKWL5NVIoPz5nbC7z8qNio+A3EeVA=="}},"testLogins":{"Sue":{"mobile":"07700 900101","code":"689651"},"Simon":{"mobile":"07700 900212","code":"449074"},"Laura":{"mobile":"07700 900323","code":"453421"},"George":{"mobile":"07700 900434","code":"326136"},"Katie":{"mobile":"07700 900545","code":"950911"},"Biff":{"mobile":"07700 900656","code":"942939"},"Dorothy":{"mobile":"07700 900767","code":"543294"}},"rules":[["George","Laura",true],["Biff","Katie",true],["Sue","Simon",true],["George","Katie",true],["Dorothy","Simon",false]],"builtAt":"2026-11-23"};
 
 /* ---------- Dogs ---------- */
 const COATS = {
@@ -426,13 +431,21 @@ function drawLights() {
 
 /* ---------- Envelopes ---------- */
 const norm = s => String(s || '').trim().toLowerCase();
+function normMobile(s) {
+  let d = String(s || '').replace(/\D/g, '');
+  if (d.startsWith('0044')) d = '0' + d.slice(4);
+  else if (d.startsWith('44')) d = '0' + d.slice(2);
+  else if (!d.startsWith('0')) d = '0' + d;
+  return d;
+}
+const normCode = s => String(s || '').replace(/\D/g, '');
 const fromB64 = b => Uint8Array.from(atob(b), ch => ch.charCodeAt(0));
-async function openEnvelope(name, email) {
+async function openEnvelope(name, mobile, code) {
   const env = DATA.envelopes[name];
   if (!env) return null;
   const subtle = window.crypto && window.crypto.subtle;
   if (!subtle) throw new Error('nocrypto');
-  const base = await subtle.importKey('raw', new TextEncoder().encode(`${norm(name)}|${norm(email)}`), 'PBKDF2', false, ['deriveKey']);
+  const base = await subtle.importKey('raw', new TextEncoder().encode(`${norm(name)}|${normMobile(mobile)}|${normCode(code)}`), 'PBKDF2', false, ['deriveKey']);
   const key = await subtle.deriveKey({ name: 'PBKDF2', salt: fromB64(env.s), iterations: DATA.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
   try {
     const pt = await subtle.decrypt({ name: 'AES-GCM', iv: fromB64(env.i) }, key, fromB64(env.c));
@@ -464,18 +477,19 @@ async function onLogin(ev) {
   ev.preventDefault();
   setError('');
   const picked = document.querySelector('input[name="who"]:checked');
-  const email = $('email').value;
+  const mobile = $('mobile').value, code = $('code').value;
   if (!picked) return setError('Pick your name first.');
-  if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError('That doesn\'t look like an email address. Check for typos.');
+  if (normMobile(mobile).length !== 11) return setError('That doesn\'t look like a UK mobile number. It should be 11 digits starting 07.');
+  if (normCode(code).length !== 6) return setError('Your elf code is 6 digits. Check the text from the organiser.');
   const now = Date.now();
   if (now < lockUntil) return setError(`Too many tries. Wait ${Math.ceil((lockUntil - now) / 1000)} seconds and try again.`);
   const btn = $('revealBtn'); btn.disabled = true; btn.textContent = 'Checking the list…';
   try {
-    const to = await openEnvelope(picked.value, email);
+    const to = await openEnvelope(picked.value, mobile, code);
     if (!to) {
       attempts++;
       if (attempts >= 5) { lockUntil = Date.now() + 30000; attempts = 0; }
-      return setError(`That email doesn't match the one on the list for ${picked.value}. Check the spelling, or ask the organiser which email they used.`);
+      return setError(`That mobile and elf code don't match the list for ${picked.value}. Check both for typos, or ask the organiser to resend your code.`);
     }
     attempts = 0;
     session = { name: picked.value, to };
@@ -508,7 +522,7 @@ function unwrap() {
 function logout() {
   session = null;
   $('who').textContent = '';
-  $('email').value = '';
+  $('mobile').value = ''; $('code').value = '';
   const c = document.querySelector('input[name="who"]:checked'); if (c) c.checked = false;
   setError('');
   show('welcome');
@@ -518,12 +532,12 @@ function logout() {
 function buildTestPanel() {
   $('testbar').hidden = false; $('testpanel').hidden = false;
   $('testLogins').innerHTML = DATA.people.map(p =>
-    `<tr><td><b>${p}</b></td><td class="mono">${DATA.testLogins[p]}</td><td><button class="btn green small" type="button" data-use="${p}">Use</button></td></tr>`).join('');
+    `<tr><td><b>${p}</b></td><td class="mono">${DATA.testLogins[p].mobile}</td><td class="mono">${DATA.testLogins[p].code}</td><td><button class="btn green small" type="button" data-use="${p}">Use</button></td></tr>`).join('');
   $('testLogins').addEventListener('click', e => {
     const p = e.target.closest('[data-use]')?.dataset.use; if (!p) return;
     session = null;
     $('who-' + p.toLowerCase()).checked = true;
-    $('email').value = DATA.testLogins[p];
+    $('mobile').value = DATA.testLogins[p].mobile; $('code').value = DATA.testLogins[p].code;
     setError('');
     show('login');
   });
@@ -533,16 +547,19 @@ async function runChecks() {
   const btn = $('runChecks'); btn.disabled = true; btn.textContent = 'Opening envelopes…';
   const P = DATA.people, L = DATA.testLogins, out = [];
   const draw = {};
-  for (const p of P) draw[p] = await openEnvelope(p, L[p]);
+  for (const p of P) draw[p] = await openEnvelope(p, L[p].mobile, L[p].code);
   const opened = P.every(p => draw[p]);
   out.push([opened, `All ${P.length} envelopes open with their own login`]);
   out.push([opened && P.every(p => draw[p] !== p), 'Nobody drew themselves']);
   const rec = P.map(p => draw[p]);
   out.push([opened && new Set(rec).size === P.length && P.every(p => rec.includes(p)), 'Everyone gives once and receives once, no duplicates']);
-  const ex = DATA.excludes || [];
-  out.push([opened && ex.every(([a, b]) => draw[a] !== b && draw[b] !== a), 'Rules kept: ' + ex.map(([a, b]) => `${a} & ${b}`).join(', ')]);
-  out.push([(await openEnvelope('George', L.Laura)) === null && (await openEnvelope('George', '')) === null, 'Wrong email is refused (George with Laura\'s email)']);
-  out.push([(await openEnvelope('Sue', '  ' + L.Sue.toUpperCase() + ' ')) === draw.Sue, 'Same login twice gives the same match (spaces and capitals ignored)']);
+  const rules = DATA.rules || [];
+  for (const [a, b, both] of rules) out.push([opened && draw[a] !== b && (!both || draw[b] !== a), both ? `${a} and ${b} can't get each other` : `${a} can't get ${b} (${b} can still get ${a})`]);
+  const wrongCode = String((Number(L.George.code) + 1) % 1e6).padStart(6, '0');
+  out.push([(await openEnvelope('George', L.George.mobile, wrongCode)) === null, 'George\'s mobile with the wrong elf code is refused']);
+  out.push([(await openEnvelope('George', L.Laura.mobile, L.Laura.code)) === null, 'Laura\'s mobile and code can\'t open George\'s envelope']);
+  const intl = '+44 ' + normMobile(L.Sue.mobile).slice(1), spaced = L.Sue.code.slice(0, 3) + ' ' + L.Sue.code.slice(3);
+  out.push([(await openEnvelope('Sue', intl, spaced)) === draw.Sue, `Same login twice gives the same match, even typed as ${intl} / ${spaced}`]);
   const lens = new Set(P.map(p => DATA.envelopes[p].c.length));
   out.push([lens.size === 1, 'Envelopes are all the same size, so their length gives nothing away']);
   $('checkList').innerHTML = out.map(([ok, t]) => `<li><span class="${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'}</span><span>${t}</span></li>`).join('');
