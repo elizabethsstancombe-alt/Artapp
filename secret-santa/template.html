@@ -1,0 +1,577 @@
+<title>Blag-mas Secret Santa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Layout: one narrow column floating over the cockapoo-pyjama pattern, fairy lights strung across the top.
+   Single deliberate look (night-navy flannel), so no light/dark switch. */
+:root {
+  --navy: #101a3d;
+  --navy-2: #1a2654;
+  --ink: #121a38;
+  --snow: #ffffff;
+  --frost: #eef1fa;
+  --red: #d42a3c;
+  --red-dk: #a81c2c;
+  --green: #1d8a4f;
+  --green-dk: #136b3a;
+  --gold: #f6c453;
+  --blue: #84a3de;
+  --muted: #59628a;
+  --line: #d9deef;
+  --font: "Figtree", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--snow);
+  background-color: var(--navy);
+  background-size: 340px auto;
+  -webkit-font-smoothing: antialiased;
+}
+.lights { position: relative; height: 64px; overflow: hidden; pointer-events: none; }
+.lights svg { display: block; width: 100%; height: 64px; }
+.bulb { filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 12px currentColor); animation: twinkle 2.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+@keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+.wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 4px 48px;
+  display: grid;
+  gap: 16px;
+}
+.testbar {
+  background: var(--gold); color: var(--ink);
+  font-weight: 700; font-size: 13px; letter-spacing: .02em;
+  border-radius: 999px; padding: 6px 14px; text-align: center;
+}
+.plate {
+  background: var(--navy);
+  border-radius: 22px;
+  border: 2px dotted rgba(132, 163, 222, .7);
+  box-shadow: 0 0 0 6px var(--navy), 0 18px 40px rgba(0,0,0,.45);
+  padding: 20px;
+}
+.hero { text-align: center; padding-top: 10px; }
+.hero-dogs { display: flex; justify-content: center; gap: 4px; margin-bottom: -4px; }
+.hero-dogs svg { width: 92px; height: auto; }
+h1 {
+  margin: 0;
+  font-weight: 900;
+  font-size: clamp(44px, 13vw, 64px);
+  line-height: .95;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+h1 .dash { color: var(--gold); }
+.kicker {
+  display: inline-block;
+  margin-top: 10px;
+  background: var(--green);
+  color: var(--snow);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 6px 14px 6px 16px;
+  border-radius: 8px;
+}
+.budget {
+  margin: 14px auto 0;
+  display: flex; justify-content: center; align-items: baseline; gap: 8px;
+  color: var(--frost); font-size: 14px;
+}
+.budget b { font-size: 22px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+.card {
+  background: var(--snow);
+  color: var(--ink);
+  border-radius: 22px;
+  padding: 24px 20px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  display: grid;
+  gap: 16px;
+}
+.card h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.02em; text-wrap: balance; }
+.card p { margin: 0; color: var(--muted); }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; counter-increment: s; font-weight: 600; }
+.steps li::before {
+  content: counter(s);
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--frost); color: var(--green-dk); font-weight: 800;
+}
+.label { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.hat { display: flex; flex-wrap: wrap; gap: 6px; }
+.hat span { background: var(--frost); border-radius: 999px; padding: 4px 12px; font-weight: 600; font-size: 14px; }
+
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  font: inherit; font-weight: 800; font-size: 17px;
+  border-radius: 14px; padding: 14px 18px;
+  background: var(--red); color: var(--snow);
+  box-shadow: 0 4px 0 var(--red-dk);
+  transition: transform .08s ease, box-shadow .08s ease, background .15s;
+}
+.btn:hover { background: #df3446; }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--red-dk); }
+.btn:disabled { opacity: .6; cursor: progress; }
+.btn.green { background: var(--green); box-shadow: 0 4px 0 var(--green-dk); }
+.btn.green:hover { background: #22995a; }
+.btn.ghost { background: transparent; color: var(--muted); box-shadow: none; font-weight: 700; font-size: 15px; padding: 8px; }
+.btn.ghost:hover { color: var(--ink); }
+.btn.small { font-size: 13px; padding: 6px 12px; border-radius: 10px; box-shadow: 0 3px 0 var(--green-dk); }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+.names { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; border: 0; padding: 0; margin: 0; }
+.names legend { margin-bottom: 8px; padding: 0; }
+.names input { position: absolute; opacity: 0; pointer-events: none; }
+.names label {
+  display: block; text-align: center; cursor: pointer;
+  border: 2px solid var(--line); border-radius: 12px;
+  padding: 10px 6px; font-weight: 700;
+  transition: border-color .15s, background .15s;
+}
+.names label:hover { border-color: var(--blue); }
+.names input:checked + label { border-color: var(--green); background: #e6f4ec; color: var(--green-dk); }
+.names input:focus-visible + label { outline: 3px solid var(--gold); outline-offset: 2px; }
+.field { display: grid; gap: 6px; }
+.field input {
+  font: inherit; font-size: 17px;
+  border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  color: var(--ink); background: var(--snow); width: 100%;
+  color-scheme: light;
+}
+.field input:focus { border-color: var(--green); outline: none; }
+.hint { font-size: 13px; color: var(--muted); }
+.error { background: #fde8ea; color: var(--red-dk); border-radius: 12px; padding: 10px 14px; font-weight: 600; font-size: 15px; }
+.actions { display: grid; gap: 6px; }
+
+/* Reveal */
+.reveal { text-align: center; justify-items: center; }
+.present {
+  appearance: none; border: 0; background: none; cursor: pointer; padding: 0;
+  width: 170px; height: 170px; position: relative;
+}
+.present svg { width: 100%; height: 100%; overflow: visible; }
+.present .lid { transition: transform .6s cubic-bezier(.3,1.6,.5,1); transform-origin: 85px 70px; }
+.present:not(.open) { animation: wiggle 2.4s ease-in-out infinite; }
+.present.open .lid { transform: translate(18px, -54px) rotate(18deg); }
+@keyframes wiggle { 0%, 80%, 100% { transform: rotate(0); } 84% { transform: rotate(-5deg); } 88% { transform: rotate(5deg); } 92% { transform: rotate(-3deg); } 96% { transform: rotate(2deg); } }
+.match { display: grid; gap: 4px; justify-items: center; }
+.match .who { font-size: clamp(40px, 12vw, 56px); font-weight: 900; letter-spacing: -.03em; color: var(--red); line-height: 1; }
+.match.hidden-name .who { filter: blur(14px); user-select: none; }
+.pop { animation: pop .5s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.locked { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: var(--frost); border-radius: 12px; padding: 10px 14px; font-size: 14px; color: var(--ink); }
+.locked svg { flex: none; margin-top: 2px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* Test panel */
+.testpanel { display: grid; gap: 12px; color: var(--frost); font-size: 14px; }
+.testpanel h3 { margin: 0; font-size: 16px; color: var(--gold); }
+.testpanel table { width: 100%; border-collapse: collapse; }
+.testpanel td { padding: 6px 4px; border-bottom: 1px solid rgba(132,163,222,.25); vertical-align: middle; }
+.testpanel td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; word-break: break-all; }
+.testpanel td:last-child { text-align: right; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.checks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.ok { color: #6fdc9b; font-weight: 900; }
+.bad { color: #ff7a88; font-weight: 900; }
+.pairs { display: flex; flex-wrap: wrap; gap: 6px; }
+.pairs span { background: var(--navy-2); border-radius: 8px; padding: 4px 10px; }
+.foot { text-align: center; font-size: 12px; color: var(--frost); opacity: .8; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bulb, .present:not(.open) { animation: none; }
+  .present .lid, .pop { transition: none; animation: none; }
+}
+</style>
+
+<header class="lights" aria-hidden="true"><svg id="lights" height="64"></svg></header>
+
+<main class="wrap">
+  <div class="testbar" id="testbar" hidden>TEST SITE · practice draw only, the real one gets redrawn</div>
+
+  <section class="plate hero">
+    <div class="hero-dogs" aria-hidden="true" id="heroDogs"></div>
+    <h1>Blag<span class="dash">-</span>mas</h1>
+    <div class="kicker">Secret Santa</div>
+    <div class="budget">Spending limit <b id="budgetVal">£50</b></div>
+  </section>
+
+  <!-- 1. Welcome -->
+  <section class="card" id="screen-welcome">
+    <h2>Welcome to the draw</h2>
+    <p>Everyone has already been paired up and sealed in their own envelope. Only you can open yours.</p>
+    <ol class="steps">
+      <li>Pick your name</li>
+      <li>Confirm your email</li>
+      <li>Unwrap who you're buying for</li>
+    </ol>
+    <div>
+      <div class="label">In the hat</div>
+      <div class="hat" id="hat" style="margin-top:8px"></div>
+    </div>
+    <button class="btn" id="goLogin" type="button">Find my person</button>
+  </section>
+
+  <!-- 2. Login -->
+  <section class="card" id="screen-login" hidden>
+    <h2>Who are you?</h2>
+    <form id="loginForm" novalidate>
+      <div style="display:grid;gap:18px">
+        <fieldset class="names" id="names">
+          <legend class="label">Your name</legend>
+        </fieldset>
+        <div class="field">
+          <label class="label" for="email">Your email</label>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+          <span class="hint">Use the email the organiser has for you. It's the key to your envelope, so nobody else can open it.</span>
+        </div>
+        <div class="error" id="loginError" role="alert" hidden></div>
+        <div class="actions">
+          <button class="btn green" id="revealBtn" type="submit">Open my envelope</button>
+          <button class="btn ghost" id="backWelcome" type="button">Back</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3. Reveal -->
+  <section class="card reveal" id="screen-reveal" hidden>
+    <h2 id="revealHello">Hi there</h2>
+    <button class="present" id="present" type="button" aria-label="Unwrap your present">
+      <svg viewBox="0 0 170 170" aria-hidden="true">
+        <rect x="22" y="72" width="126" height="88" rx="8" fill="#d42a3c"/>
+        <rect x="76" y="72" width="18" height="88" fill="#84a3de"/>
+        <rect x="22" y="104" width="126" height="16" fill="#84a3de" opacity=".55"/>
+        <g class="lid">
+          <rect x="14" y="52" width="142" height="26" rx="7" fill="#e3394b"/>
+          <rect x="76" y="52" width="18" height="26" fill="#9db7e8"/>
+          <path d="M85 52c-10-22-38-26-38-10 0 10 22 12 38 10z" fill="none" stroke="#9db7e8" stroke-width="8" stroke-linejoin="round"/>
+          <path d="M85 52c10-22 38-26 38-10 0 10-22 12-38 10z" fill="none" stroke="#9db7e8" stroke-width="8" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </button>
+    <p id="tapHint"><b>Tap the present</b> to unwrap your match.</p>
+    <div class="match" id="match" hidden>
+      <span class="label">You're Secret Santa for</span>
+      <span class="who" id="who"></span>
+      <span style="color:var(--muted)">Spend up to <b style="color:var(--ink)" id="budget2">£50</b></span>
+    </div>
+    <div class="locked" id="lockedNote" hidden>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d8a4f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <span>Your match is locked. Log in again any time and you'll see this same name. Keep it secret!</span>
+    </div>
+    <div class="row" id="revealActions" hidden>
+      <button class="btn green small" id="hideBtn" type="button" aria-pressed="false">Hide name</button>
+      <button class="btn small" id="logoutBtn" type="button" style="box-shadow:0 3px 0 var(--red-dk)">Log out</button>
+    </div>
+  </section>
+
+  <!-- Test-only tools -->
+  <section class="plate testpanel" id="testpanel" hidden>
+    <h3>Test logins</h3>
+    <p style="margin:0">Fake emails for trying the flow. Tap Use to fill the login.</p>
+    <table><tbody id="testLogins"></tbody></table>
+    <h3>Draw checks</h3>
+    <p style="margin:0">Opens every envelope with the test logins and checks the rules. This shows the whole practice draw.</p>
+    <button class="btn green small" id="runChecks" type="button" style="justify-self:start">Run the checks</button>
+    <ul class="checks" id="checkList"></ul>
+    <div class="pairs" id="pairs"></div>
+  </section>
+
+  <p class="foot" id="foot">Blag-mas Secret Santa</p>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+/* ---------- Dogs ---------- */
+const COATS = {
+  apricot: { base: '#e3b27b', shade: '#b97f4b', light: '#f3d2a6', ear: '#d39e67', nose: '#4a2c1e', eye: '#2a1a12', ring: null },
+  black:   { base: '#2e2826', shade: '#0e0c0b', light: '#544841', ear: '#221d1b', nose: '#0a0909', eye: '#060505', ring: '#5e524b' },
+};
+function rng(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const f1 = n => n.toFixed(1);
+function blob(cx, cy, rx, ry, n, r, fill) {
+  let s = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}"/>`;
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; s += `<circle cx="${f1(cx + Math.cos(a) * rx)}" cy="${f1(cy + Math.sin(a) * ry)}" r="${r}" fill="${fill}"/>`; }
+  return s;
+}
+function curls(cx, cy, rx, ry, n, col, R) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const a = R() * Math.PI * 2, d = Math.sqrt(R()) * .82;
+    s += `<path d="M${f1(cx + Math.cos(a) * rx * d)} ${f1(cy + Math.sin(a) * ry * d)}a2.2 2.2 0 1 1 3.2 1.4" fill="none" stroke="${col}" stroke-width="1.1" stroke-linecap="round" opacity=".5"/>`;
+  }
+  return s;
+}
+const ACC = {
+  santa: () => `<path d="M37 34C41 14 58 5 73 9c9 2 15 9 17 17l-6 8z" fill="#d42a3c"/><rect x="34" y="28" width="54" height="11" rx="5.5" fill="#f7f4ef"/><circle cx="90" cy="26" r="6" fill="#f7f4ef"/>`,
+  bobble: () => `<path d="M39 34C40 12 80 12 81 34z" fill="#84a3de"/><rect x="36" y="28" width="48" height="10" rx="4.5" fill="#6286cc"/>` +
+    Array.from({ length: 10 }, (_, i) => `<path d="M${40 + i * 4.4} 29.5v7" stroke="#4d70b5" stroke-width="1.2"/>`).join('') +
+    `<circle cx="60" cy="12" r="7.5" fill="#adc3ef"/>`,
+  scarf: () => `<rect x="39" y="63" width="42" height="11" rx="5.5" fill="#4f9d7c"/><g transform="rotate(-8 71 68)"><rect x="66" y="67" width="11" height="25" rx="3" fill="#4f9d7c"/><path d="M68 92v4M71.5 92v4M75 92v4" stroke="#4f9d7c" stroke-width="1.6" stroke-linecap="round"/><path d="M66 76h11M66 83h11" stroke="#3d8466" stroke-width="2"/></g>`,
+  bow: () => `<path d="M60 69 47 62v14zM60 69l13-7v14z" fill="#d42a3c"/><circle cx="60" cy="69" r="3.6" fill="#a81c2c"/>`,
+  jumper: () => `<path d="M37 71Q60 62 83 71l4 36Q60 113 33 107z" fill="#86c4a0"/>` +
+    `<path d="M41 69Q60 61 79 69l1 6Q60 67 40 75z" fill="#84a3de"/>` +
+    `<path d="M33 102Q60 109 87 102l.4 5Q60 113 33 107z" fill="#84a3de"/>` +
+    [44, 52, 60, 68, 76].map(x => `<path d="M${x} 82l3.5 4.5-3.5 4.5-3.5-4.5z" fill="#eef7f1"/>`).join('') +
+    [48, 56, 64, 72].map(x => `<circle cx="${x}" cy="94" r="1.4" fill="#eef7f1"/><circle cx="${x}" cy="78" r="1.2" fill="#eef7f1"/>`).join(''),
+  gift: c => `<rect x="42" y="76" width="36" height="28" rx="2.5" fill="#d42a3c"/><rect x="57" y="76" width="6" height="28" fill="#84a3de"/><rect x="42" y="87" width="36" height="6" fill="#84a3de"/>` +
+    `<path d="M60 76c-5-8-14-8-13-3 1 4 8 4 13 3zM60 76c5-8 14-8 13-3-1 4-8 4-13 3z" fill="none" stroke="#84a3de" stroke-width="2.6"/>` +
+    blob(41, 92, 5, 7, 8, 2.6, c.base) + blob(79, 92, 5, 7, 8, 2.6, c.base),
+};
+function dog(coat, accs = [], seed = 7) {
+  const c = COATS[coat], R = rng(seed);
+  let s = '';
+  s += blob(88, 112, 9, 5, 7, 3.4, c.base);                     // tail tuft
+  s += blob(60, 104, 32, 18, 16, 5, c.base) + curls(60, 104, 29, 15, 10, c.shade, R); // haunches
+  s += blob(60, 86, 23, 25, 14, 5, c.base) + curls(60, 86, 20, 21, 9, c.shade, R);    // chest
+  s += `<rect x="44" y="92" width="13" height="28" rx="6" fill="${c.base}"/><rect x="63" y="92" width="13" height="28" rx="6" fill="${c.base}"/>`;
+  s += blob(50, 120, 8, 5, 8, 3, c.base) + blob(70, 120, 8, 5, 8, 3, c.base);
+  s += `<path d="M47 121v3M51 121v3M67 121v3M71 121v3" stroke="${c.shade}" stroke-width="1" stroke-linecap="round" opacity=".7"/>`;
+  s += blob(60, 46, 21, 20, 16, 5.5, c.base) + blob(60, 29, 12, 6, 8, 4.5, c.light) + curls(60, 42, 16, 13, 9, c.shade, R); // head
+  for (const side of [-1, 1]) {
+    const ex = 60 + side * 22;
+    s += `<g transform="rotate(${-side * 10} ${ex} 40)">${blob(ex, 57, 9, 17, 12, 4.5, c.ear)}${curls(ex, 57, 7, 14, 4, c.shade, R)}</g>`;
+  }
+  s += blob(60, 57, 11, 8, 10, 3, c.light);                         // muzzle
+  if (c.ring) s += `<circle cx="52" cy="47" r="4.4" fill="${c.ring}"/><circle cx="68" cy="47" r="4.4" fill="${c.ring}"/>`;
+  s += `<circle cx="52" cy="47" r="3" fill="${c.eye}"/><circle cx="68" cy="47" r="3" fill="${c.eye}"/><circle cx="53" cy="46" r="1" fill="#fff"/><circle cx="69" cy="46" r="1" fill="#fff"/>`;
+  s += `<path d="M55.5 52q4.5-2 9 0q-1 4-4.5 5q-3.5-1-4.5-5z" fill="${c.nose}"/>`;
+  s += `<path d="M60 57v2.4M56.5 60.5q3.5 2.5 7 0" stroke="${c.nose}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
+  for (const a of accs) s += ACC[a](c);
+  return s;
+}
+const dogSvg = (coat, accs, seed) => `<svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">${dog(coat, accs, seed)}</svg>`;
+
+/* ---------- Pyjama pattern tile ---------- */
+function patternTile() {
+  const CW = 170, CH = 170, COLS = 3, ROWS = 2, W = CW * COLS, H = CH * ROWS, A = 6;
+  let s = '';
+  const wave = (horizontal, at) => {
+    const pts = [], lv = [];
+    const len = horizontal ? W : H;
+    for (let t = 0; t <= len; t += 5) {
+      const off = A * Math.sin(2 * Math.PI * t / CW), d = A * 2 * Math.PI / CW * Math.cos(2 * Math.PI * t / CW);
+      pts.push(horizontal ? [t, at + off] : [at + off, t]);
+      lv.push(horizontal ? [1, d] : [d, 1]);
+    }
+    return { pts, lv };
+  };
+  const pathOf = (pts, dx = 0, dy = 0) => 'M' + pts.map(([x, y]) => `${f1(x + dx)} ${f1(y + dy)}`).join('L');
+  const vine = (horizontal, at) => {
+    const { pts, lv } = wave(horizontal, at);
+    s += `<path d="${pathOf(pts)}" fill="none" stroke="#6f8fd2" stroke-width="2"/>`;
+    for (const o of [-10, 10]) s += `<path d="${pathOf(pts, horizontal ? 0 : o, horizontal ? o : 0)}" fill="none" stroke="#e9ecf7" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0 5.5" opacity=".75"/>`;
+    for (let i = 1; i < pts.length; i += 2) {
+      const [x, y] = pts[i], [tx, ty] = lv[i], m = Math.hypot(tx, ty), ux = tx / m, uy = ty / m;
+      for (const sgn of [-1, 1]) {
+        const ang = sgn * 0.75, lx = ux * Math.cos(ang) - uy * Math.sin(ang), ly = ux * Math.sin(ang) + uy * Math.cos(ang);
+        s += `<path d="M${f1(x)} ${f1(y)}l${f1(lx * 5.5)} ${f1(ly * 5.5)}" stroke="#6f8fd2" stroke-width="2.2" stroke-linecap="round"/>`;
+      }
+    }
+  };
+  const holly = (x, y, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})"><ellipse cx="-6" cy="0" rx="7" ry="3.2" transform="rotate(-25 -6 0)" fill="#3f9a5c"/><ellipse cx="6" cy="0" rx="7" ry="3.2" transform="rotate(25 6 0)" fill="#3f9a5c"/><circle cx="-2.4" cy="-3" r="2.6" fill="#d42a3c"/><circle cx="2.6" cy="-3" r="2.6" fill="#d42a3c"/><circle cx="0" cy="-6.6" r="2.6" fill="#d42a3c"/></g>`;
+  const dogs = [
+    ['apricot', ['jumper', 'santa'], 3], ['black', ['bow'], 11], ['apricot', ['gift'], 5],
+    ['black', ['scarf', 'bobble'], 17], ['apricot', ['bow'], 23], ['black', ['jumper', 'santa'], 29],
+  ];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const [coat, accs, seed] = dogs[r * COLS + c];
+    s += `<g transform="translate(${c * CW + 25} ${r * CH + 22})">${dog(coat, accs, seed)}</g>`;
+    s += holly(c * CW + 24, r * CH + 26, -20) + holly(c * CW + CW - 24, r * CH + CH - 22, 160);
+  }
+  for (let r = 0; r <= ROWS; r++) vine(true, r * CH);
+  for (let c = 0; c <= COLS; c++) vine(false, c * CW);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${s}</svg>`;
+}
+
+/* ---------- Fairy lights ---------- */
+const BULBS = ['#ff4a5c', '#3ddc84', '#ffd166', '#7fb2ff'];
+function drawLights() {
+  const svg = document.getElementById('lights');
+  const W = Math.max(320, document.documentElement.clientWidth);
+  const n = Math.max(2, Math.round(W / 150)), seg = W / n, sag = 18, top = 4;
+  let wire = `M0 ${top}`, bulbs = '', k = 0;
+  for (let i = 0; i < n; i++) {
+    const x0 = i * seg, cx = x0 + seg / 2, cy = top + sag * 2;
+    wire += `Q${f1(cx)} ${cy} ${f1(x0 + seg)} ${top}`;
+    for (const t of [.22, .5, .78]) {
+      const x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t * t * (x0 + seg);
+      const y = (1 - t) ** 2 * top + 2 * (1 - t) * t * cy + t * t * top;
+      const dy = 2 * (1 - t) * (cy - top) + 2 * t * (top - cy), dx = seg;
+      const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+      const col = BULBS[k % BULBS.length];
+      bulbs += `<g transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(ang * .6)})"><rect x="-3.5" y="-1" width="7" height="7" rx="1.5" fill="#24402e"/><path class="bulb" style="color:${col};--d:${((k * 0.37) % 2.6).toFixed(2)}s" d="M0 5c-6 3-7 11-4 16 2 3 6 3 8 0 3-5 2-13-4-16z" fill="currentColor"/></g>`;
+      k++;
+    }
+  }
+  svg.setAttribute('viewBox', `0 0 ${W} 64`);
+  svg.innerHTML = `<path d="${wire}" fill="none" stroke="#24402e" stroke-width="2.2"/>${bulbs}`;
+}
+
+/* ---------- Envelopes ---------- */
+const norm = s => String(s || '').trim().toLowerCase();
+const fromB64 = b => Uint8Array.from(atob(b), ch => ch.charCodeAt(0));
+async function openEnvelope(name, email) {
+  const env = DATA.envelopes[name];
+  if (!env) return null;
+  const subtle = window.crypto && window.crypto.subtle;
+  if (!subtle) throw new Error('nocrypto');
+  const base = await subtle.importKey('raw', new TextEncoder().encode(`${norm(name)}|${norm(email)}`), 'PBKDF2', false, ['deriveKey']);
+  const key = await subtle.deriveKey({ name: 'PBKDF2', salt: fromB64(env.s), iterations: DATA.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  try {
+    const pt = await subtle.decrypt({ name: 'AES-GCM', iv: fromB64(env.i) }, key, fromB64(env.c));
+    return JSON.parse(new TextDecoder().decode(pt)).to;
+  } catch { return null; }
+}
+
+/* ---------- Screens ---------- */
+const $ = id => document.getElementById(id);
+const screens = ['welcome', 'login', 'reveal'];
+function show(name) {
+  for (const s of screens) $('screen-' + s).hidden = s !== name;
+  const el = $('screen-' + name);
+  const h = el.querySelector('h2'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+  el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+}
+
+let session = null; // { name, to } — memory only, gone on reload or log out
+let attempts = 0, lockUntil = 0;
+
+function buildNames() {
+  $('hat').innerHTML = DATA.people.map(p => `<span>${p}</span>`).join('');
+  $('names').insertAdjacentHTML('beforeend', DATA.people.map(p =>
+    `<div><input type="radio" name="who" id="who-${p.toLowerCase()}" value="${p}"><label for="who-${p.toLowerCase()}">${p}</label></div>`).join(''));
+}
+function setError(msg) { const e = $('loginError'); e.textContent = msg || ''; e.hidden = !msg; }
+
+async function onLogin(ev) {
+  ev.preventDefault();
+  setError('');
+  const picked = document.querySelector('input[name="who"]:checked');
+  const email = $('email').value;
+  if (!picked) return setError('Pick your name first.');
+  if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError('That doesn\'t look like an email address. Check for typos.');
+  const now = Date.now();
+  if (now < lockUntil) return setError(`Too many tries. Wait ${Math.ceil((lockUntil - now) / 1000)} seconds and try again.`);
+  const btn = $('revealBtn'); btn.disabled = true; btn.textContent = 'Checking the list…';
+  try {
+    const to = await openEnvelope(picked.value, email);
+    if (!to) {
+      attempts++;
+      if (attempts >= 5) { lockUntil = Date.now() + 30000; attempts = 0; }
+      return setError(`That email doesn't match the one on the list for ${picked.value}. Check the spelling, or ask the organiser which email they used.`);
+    }
+    attempts = 0;
+    session = { name: picked.value, to };
+    startReveal();
+  } catch (e) {
+    setError('This browser can\'t open envelopes. Try a recent Chrome, Safari or Edge.');
+  } finally { btn.disabled = false; btn.textContent = 'Open my envelope'; }
+}
+
+function startReveal() {
+  $('revealHello').textContent = `Hi ${session.name}!`;
+  $('present').classList.remove('open'); $('present').hidden = false; $('present').disabled = false;
+  $('tapHint').hidden = false;
+  for (const id of ['match', 'lockedNote', 'revealActions']) $(id).hidden = true;
+  $('match').classList.remove('hidden-name');
+  $('hideBtn').textContent = 'Hide name'; $('hideBtn').setAttribute('aria-pressed', 'false');
+  show('reveal');
+}
+function unwrap() {
+  if (!session) return;
+  $('present').classList.add('open'); $('present').disabled = true;
+  $('tapHint').hidden = true;
+  $('who').textContent = session.to;
+  setTimeout(() => {
+    $('present').hidden = true;
+    for (const id of ['match', 'lockedNote', 'revealActions']) $(id).hidden = false;
+    $('match').classList.add('pop');
+  }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
+}
+function logout() {
+  session = null;
+  $('who').textContent = '';
+  $('email').value = '';
+  const c = document.querySelector('input[name="who"]:checked'); if (c) c.checked = false;
+  setError('');
+  show('welcome');
+}
+
+/* ---------- Test tools ---------- */
+function buildTestPanel() {
+  $('testbar').hidden = false; $('testpanel').hidden = false;
+  $('testLogins').innerHTML = DATA.people.map(p =>
+    `<tr><td><b>${p}</b></td><td class="mono">${DATA.testLogins[p]}</td><td><button class="btn green small" type="button" data-use="${p}">Use</button></td></tr>`).join('');
+  $('testLogins').addEventListener('click', e => {
+    const p = e.target.closest('[data-use]')?.dataset.use; if (!p) return;
+    session = null;
+    $('who-' + p.toLowerCase()).checked = true;
+    $('email').value = DATA.testLogins[p];
+    setError('');
+    show('login');
+  });
+  $('runChecks').addEventListener('click', runChecks);
+}
+async function runChecks() {
+  const btn = $('runChecks'); btn.disabled = true; btn.textContent = 'Opening envelopes…';
+  const P = DATA.people, L = DATA.testLogins, out = [];
+  const draw = {};
+  for (const p of P) draw[p] = await openEnvelope(p, L[p]);
+  const opened = P.every(p => draw[p]);
+  out.push([opened, `All ${P.length} envelopes open with their own login`]);
+  out.push([opened && P.every(p => draw[p] !== p), 'Nobody drew themselves']);
+  const rec = P.map(p => draw[p]);
+  out.push([opened && new Set(rec).size === P.length && P.every(p => rec.includes(p)), 'Everyone gives once and receives once, no duplicates']);
+  const ex = DATA.excludes || [];
+  out.push([opened && ex.every(([a, b]) => draw[a] !== b && draw[b] !== a), 'Rules kept: ' + ex.map(([a, b]) => `${a} & ${b}`).join(', ')]);
+  out.push([(await openEnvelope('George', L.Laura)) === null && (await openEnvelope('George', '')) === null, 'Wrong email is refused (George with Laura\'s email)']);
+  out.push([(await openEnvelope('Sue', '  ' + L.Sue.toUpperCase() + ' ')) === draw.Sue, 'Same login twice gives the same match (spaces and capitals ignored)']);
+  const lens = new Set(P.map(p => DATA.envelopes[p].c.length));
+  out.push([lens.size === 1, 'Envelopes are all the same size, so their length gives nothing away']);
+  $('checkList').innerHTML = out.map(([ok, t]) => `<li><span class="${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'}</span><span>${t}</span></li>`).join('');
+  $('pairs').innerHTML = opened ? P.map(p => `<span>${p} → ${draw[p]}</span>`).join('') : '';
+  btn.disabled = false; btn.textContent = 'Run the checks again';
+}
+
+/* ---------- Boot ---------- */
+(function boot() {
+  try {
+    document.body.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(patternTile())}")`;
+  } catch {}
+  drawLights();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawLights, 150); });
+  $('heroDogs').innerHTML = dogSvg('black', ['jumper', 'santa'], 41) + dogSvg('apricot', ['gift'], 43);
+  if (!DATA) { $('screen-welcome').innerHTML = '<h2>The draw hasn\'t been made yet</h2><p>Check back once the organiser has run it.</p>'; return; }
+  $('budgetVal').textContent = DATA.budget; $('budget2').textContent = DATA.budget;
+  buildNames();
+  $('goLogin').addEventListener('click', () => show('login'));
+  $('backWelcome').addEventListener('click', () => { setError(''); show('welcome'); });
+  $('loginForm').addEventListener('submit', onLogin);
+  $('present').addEventListener('click', unwrap);
+  $('logoutBtn').addEventListener('click', logout);
+  $('hideBtn').addEventListener('click', () => {
+    const hidden = $('match').classList.toggle('hidden-name');
+    $('hideBtn').textContent = hidden ? 'Show name' : 'Hide name';
+    $('hideBtn').setAttribute('aria-pressed', String(hidden));
+  });
+  if (DATA.mode === 'test') buildTestPanel();
+  $('foot').textContent = `Blag-mas Secret Santa · ${DATA.people.length} in the hat · draw sealed ${DATA.builtAt}`;
+})();
+</script>
